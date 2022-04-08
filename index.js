@@ -11,19 +11,22 @@ class Markdown extends Component {
     if (props.enableLightBox && !props.navigator) {
       throw new Error('props.navigator must be specified when enabling lightbox');
     }
+    this.updateLocalData();
+  }
 
+  updateLocalData() {
     const opts = {
-      enableLightBox: props.enableLightBox,
-      navigator: props.navigator,
-      imageParam: props.imageParam,
-      onLink: props.onLink,
-      bgImage: props.bgImage,
-      onImageOpen: props.onImageOpen,
-      onImageClose: props.onImageClose,
-      rules: props.rules
+      enableLightBox: this.props.enableLightBox,
+      navigator: this.props.navigator,
+      imageParam: this.props.imageParam,
+      onLink: this.props.onLink,
+      bgImage: this.props.bgImage,
+      onImageOpen: this.props.onImageOpen,
+      onImageClose: this.props.onImageClose,
+      rules: this.props.rules
     };
 
-    const mergedStyles = merge({}, styles, props.styles);
+    const mergedStyles = merge({}, styles, this.props.styles);
     var rules = require('./rules')(mergedStyles, opts);
     rules = merge({}, SimpleMarkdown.defaultRules, rules, opts.rules);
 
@@ -42,7 +45,7 @@ class Markdown extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !isEqual(nextProps.children, this.props.children);
+    return !isEqual(nextProps.children, this.props.children) || !isEqual(nextProps.styles, this.props.styles);
   }
 
   render() {
@@ -50,6 +53,7 @@ class Markdown extends Component {
       ? this.props.children.join('')
       : this.props.children;
 
+    this.updateLocalData();
     const tree = this.parse(child);
 
     return <View style={[styles.view, this.props.styles.view]}>{this.renderer(tree)}</View>
